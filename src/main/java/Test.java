@@ -1,11 +1,15 @@
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.List;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-        Path path = Paths.get("D:\\JavaProjects\\FileManager\\root\\text10.txt");
-        System.out.println(path);
+        Path filePath = Paths.get(".\\file1.txt");
+
+
+        Path normalizeFilePath = Paths.get(filePath.toRealPath().toString());
+
+        System.out.println(normalizeFilePath);
+
     }
 }

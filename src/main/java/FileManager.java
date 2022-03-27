@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+
 public class FileManager {
     private Path currentFolder;
     private Path root;
@@ -13,33 +14,29 @@ public class FileManager {
         this.root = Paths.get(currentFolder);
     }
 
+    private String concatPath(String current, String fileName) {
+        return current + "\\" + fileName;
+    }
+
     public void createFile(String fileName) throws IOException {
-        Path currentFile = Paths.get(currentFolder + fileName);
+        String fullPath = concatPath(currentFolder.toString(), fileName);
+        Path currentFile = Paths.get(fullPath);
         Files.createFile(currentFile);
     }
 
-    public void listOfFiles() throws IOException {
-        List<String> files = Files.
-
-        for (String file : files) {
-            System.out.println(file);
-        }
-    }
-
-    /*
-    Добавить правильную конвертацию:
-        cp file1.txt ../file2.txt
-    Пока он копирует по относительным путям в рамках одной папки
-     */
     public void copyFile(String source, String destination) throws IOException {
-        Path sourcePath = Paths.get(currentFolder + source);
-        Path destPath = Paths.get(currentFolder + destination);
+        String fullSourcePath = concatPath(currentFolder.toString(), source);
+        String fullDestPath = concatPath(currentFolder.toString(), destination);
+
+        Path sourcePath = Paths.get(fullSourcePath);
+        Path destPath = Paths.get(fullDestPath);
 
         Files.copy(sourcePath, destPath);
     }
 
     public void fileContent(String fileName) throws IOException {
-        Path currentFile = Paths.get(currentFolder + fileName);
+        String fullPath = concatPath(currentFolder.toString(), fileName);
+        Path currentFile = Paths.get(fullPath);
 
         List<String> lines = Files.readAllLines(currentFile);
         for (String line: lines) {
@@ -53,7 +50,34 @@ public class FileManager {
         } else if ("/".equals(folderName)) {
             currentFolder = root;
         } else {
-            currentFolder = Paths.get(currentFolder + folderName);
+            String fullPath = concatPath(currentFolder.toString(), folderName);
+            currentFolder = Paths.get(fullPath);
         }
+    }
+
+    public void listOfFiles() throws IOException {
+        List<Path> result = Files.walk(currentFolder, 1).toList();
+        for (Path path : result) {
+            if (path == currentFolder) {
+                continue;
+            }
+
+            if (Files.isDirectory(path)) {
+                System.out.println(path.getFileName().toString() + "/");
+            } else {
+                System.out.println(path.getFileName());
+            }
+        }
+    }
+
+    public void deleteFile(String fileName) throws IOException {
+        String filePath = concatPath(currentFolder.toString(), fileName);
+        Path path = Paths.get(filePath);
+        Files.delete(path);
+    }
+
+    public void deleteDirectory(String dirName) throws IOException {
+        Path path = Paths.get(dirName);
+        Files.delete(path);
     }
 }
